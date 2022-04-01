@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: fluentd-daemonset
+spec:
+  selector:
+    matchLabels:
+      name: fluentd-pod
+  template:
+    metadata:
+      labels:
+        name: fluentd-pod
+    spec:
+      containers:
+        - name: fluentd-container
+          image: fluentd:latest
+          volumeMounts:
+            - name: config-volume
+              mountPath: /fluentd/etc
+            - name: host-log-directory
+              mountPath: /var/log/containers
+              readOnly: true
+      volumes:
+        - name: config-volume
+          configMap:
+            name: fluentd-conf
+        - name: host-log-directory
+          hostPath:
+            path: /var/log/containers
